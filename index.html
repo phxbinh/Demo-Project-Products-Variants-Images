@@ -9,7 +9,11 @@
 <link rel="stylesheet" href="createProduct.css">
 <!---->
 
-<!-- Dùng cho RenderProducts.js -->
+<!-- Dùng cho detailProducts.js -->
+<link rel="stylesheet" href="detailProduct.css">
+<!---->
+
+<!-- Dùng cho viewProducts.js -->
 <link rel="stylesheet" href="viewProduct.css">
 <!---->
 
@@ -29,8 +33,6 @@
 <script src="./framework/init_API.js"></script>
 <!---->
 
-
-<!-- INIT SUPABASE TRƯỚC -->
 <!-- INIT SUPABASE TRƯỚC -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
@@ -49,6 +51,7 @@
     const scripts = [
       'CreateProduct.js', // Tạo sản phẩm
       'viewProduct.js',   // Xem danh sách
+      'detailProduct.js', // Xem chi tiết
       'RoutesMenu.js'     // routing + UI
     ];
 
@@ -79,14 +82,6 @@
     console.error('Critical error loading application scripts', err);
   });
 </script>
-
-
-
-
-
-
-
-
 
 </body>
 </html>
