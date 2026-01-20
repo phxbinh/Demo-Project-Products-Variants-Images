@@ -1,134 +1,140 @@
-/* product-detail.css - Thiết kế chi tiết sản phẩm */
+/* ProductDetail.module.css */
 
-/* Container chính */
-.product-detail {
+.container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 cột: ảnh + info */
-  gap: 40px;
+  padding: 2rem 1rem;
+  font-family: system-ui, -apple-system, BlinkMacOSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Ảnh sản phẩm */
-.product-image {
+.title {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+  color: #111;
+  line-height: 1.1;
+}
+
+.productImage {
   width: 100%;
+  max-width: 560px;
   height: auto;
-  max-height: 500px;
   object-fit: contain;
   border-radius: 12px;
-  border: 1px solid #e0e0e0;
-  background: #f8f9fa;
-  transition: transform 0.3s ease;
+  border: 1px solid #e5e5e5;
+  background: #f9f9f9;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  margin-bottom: 2rem;
 }
 
-.product-image:hover {
-  transform: scale(1.02);
+.productImage:hover {
+  transform: scale(1.015);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-/* Nhóm thuộc tính (color, size, ...) */
-.attr-group {
-  margin-bottom: 24px;
+.attrGroup {
+  margin: 2rem 0;
 }
 
-.attr-group label {
+.attrGroup label {
   display: block;
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
+  color: #222;
+  margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* Các option (button) */
-.attr-options {
+.attrOptions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
-.attr-options button {
-  padding: 10px 18px;
+.attrOptions button {
+  padding: 0.65rem 1.4rem;
+  min-width: 48px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  background: #ffffff;
-  font-size: 15px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 60px;
-  text-align: center;
+  user-select: none;
 }
 
-.attr-options button:hover {
-  background: #f3f4f6;
+.attrOptions button:hover:not(:disabled) {
   border-color: #9ca3af;
+  background: #f3f4f6;
+  transform: translateY(-1px);
 }
 
-.attr-options button.active {
-  background: #3b82f6;
+.attrOptions button.active {
+  background: #111;
   color: white;
-  border-color: #2563eb;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+  border-color: #111;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Giá và tồn kho */
-.price-block {
-  margin: 24px 0;
-  font-size: 28px;
-  font-weight: bold;
-  color: #111827;
+.attrOptions button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
 }
 
-.price-block strong {
-  color: #047857; /* xanh lá cho giá chính */
+.priceBlock {
+  margin: 2.5rem 0;
+  padding: 1.5rem 2rem;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
 
-.price-block p {
-  font-size: 16px;
-  margin-top: 8px;
-  font-weight: normal;
-  color: #4b5563;
-}
-
-/* Mô tả sản phẩm (nếu có) */
-.description {
-  margin-top: 32px;
-  line-height: 1.7;
-  color: #4b5563;
-  font-size: 16px;
-}
-
-/* Responsive: Mobile - xếp chồng */
-@media (max-width: 768px) {
-  .product-detail {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .product-image {
-    max-height: 400px;
-  }
-
-  .attr-options button {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-
-  .price-block {
-    font-size: 24px;
-  }
-}
-
-/* Loading / Error state (nếu bạn thêm) */
-.loading, .error-message {
-  text-align: center;
-  padding: 60px 0;
-  font-size: 18px;
-  color: #6b7280;
-}
-
-.error-message {
+.price {
+  font-size: 2.25rem;
+  font-weight: 700;
   color: #dc2626;
+  margin: 0 0 0.5rem;
+}
+
+.stockInfo {
+  font-size: 1.1rem;
+  margin: 0.5rem 0 0;
+  color: #047857;
+}
+
+.stockOut {
+  color: #b91c1c;
+}
+
+.hint {
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}
+
+.description {
+  margin-top: 3rem;
+  line-height: 1.8;
+  color: #444;
+  font-size: 1.05rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .price {
+    font-size: 1.9rem;
+  }
+
+  .attrOptions button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
 }
