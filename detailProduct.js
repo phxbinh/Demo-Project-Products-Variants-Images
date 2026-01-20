@@ -121,6 +121,55 @@ function ProductDetailPage({ params }) {
 
   // useEffect load data giữ nguyên như cũ
   // useEffect auto select variant giữ nguyên
+useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+
+        // 1. Load product
+        const { data: p, error: pErr } = await supabase
+          .from("products")
+          .select("id, name, slug, description, thumbnail_url, status")
+          .eq("slug", slug)
+          .eq("status", "active")
+          .single();
+
+        if (pErr || !p) throw new Error("Không tìm thấy sản phẩm");
+
+        setProduct(p);
+
+        // 2. Load variants + attributes từ view
+        const { data: rows, error: vErr } = await supabase
+          .from("public_product_variants_with_attrs_view")
+          .select("variant_id, price, stock, attribute_code, attribute_value")
+          .eq("product_id", p.id);
+
+        if (vErr) throw vErr;
+
+        setVariants(groupVariants(rows));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [slug]);
+
+  // Tự động tìm variant khớp khi chọn attribute
+  useEffect(() => {
+    if (!variants.length || Object.keys(selectedAttrs).length === 0) {
+      setSelectedVariant(null);
+      return;
+    }
+
+    const found = variants.find(v =>
+      Object.entries(selectedAttrs).every(([k, val]) => v.attrs[k] === val)
+    );
+
+    setSelectedVariant(found || null);
+  }, [selectedAttrs, variants]);
 
   if (loading) return h('p', { className: styles.hint }, 'Đang tải...');
   if (error) return h('p', { style: { color: '#dc2626', fontWeight: 500 } }, error);
@@ -171,6 +220,7 @@ function ProductDetailPage({ params }) {
     product.description && h('div', { className: styles.description }, product.description)
   );
 }
+
 
 
 
