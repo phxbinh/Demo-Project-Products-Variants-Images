@@ -9,6 +9,10 @@
 <link rel="stylesheet" href="createProduct.css">
 <!---->
 
+<!-- Dùng cho RenderProducts.js -->
+<link rel="stylesheet" href="viewProduct.css">
+<!---->
+
 
   <style>
 
@@ -44,7 +48,8 @@
   async function loadScriptsInOrder() {
     const scripts = [
       'CreateProduct.js', // Tạo sản phẩm
-      'RoutesMenu.js'      // routing + UI
+      'viewProduct.js',   // Xem danh sách
+      'RoutesMenu.js'     // routing + UI
     ];
 
     for (const src of scripts) {
