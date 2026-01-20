@@ -133,9 +133,24 @@ function ProductListPage() {
     return () => { mounted = false; };
   }, []);
 
+
+/*
   if (loading) {
     return h("p", { className: "no-products" }, "Đang tải sản phẩm...");
   }
+*/
+
+  // ────────────────────────────────────────────────
+  // Render (SỬA: Chỉ error nếu !product VÀ !loading)
+  // ────────────────────────────────────────────────
+  if (loading) {
+    return h("div", { className: "product-detail-loading" },
+      h("div", { className: "spinner" }),
+      h("p", {}, "Đang tải sản phẩm...")
+    );
+  }
+
+
 
   return h(
     "div",
