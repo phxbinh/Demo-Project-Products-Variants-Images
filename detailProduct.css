@@ -60,6 +60,8 @@
   transition: all 0.2s ease;
   min-width: 60px;
   text-align: center;
+  color: black;
+  font-weight: 800;
 }
 
 .attr-options button:hover {
@@ -70,9 +72,8 @@
 .attr-options button.active {
   background: #3b82f6;
   color: black;
-  font-weight: 700;
+  font-weight: 800;
   border-color: #2563eb;
-  font-weight: 600;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
