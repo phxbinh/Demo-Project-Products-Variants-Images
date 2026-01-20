@@ -19,7 +19,7 @@ function Home() {
 window.App.Router.addRoute("/", Home);
 
 window.App.Router.addRoute("/admin/products/create", ProductCreatePage);
-
+window.App.Router.addRoute("/admin/products/view", ProductListPage);
 
 // Navbar đơn giản
 window.App.Router.navbarDynamic({
@@ -32,7 +32,8 @@ window.App.Router.navbarDynamic({
     }
   },
     h(Link, { to: "/", style: { color: "white", margin: "0 1rem" }, children: "Home"}),
-    h(Link, { to: "/admin/products/create", style: { color: "white", margin: "0 1rem" }, children: "Create Product" })
+    h(Link, { to: "/admin/products/create", style: { color: "white", margin: "0 1rem" }, children: "Create Product" }),
+    h(Link, { to: "/admin/products/view", style: { color: "white", margin: "0 1rem" }, children: "View Product" })
   )
 });
 
