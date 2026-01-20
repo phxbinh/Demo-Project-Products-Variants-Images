@@ -166,6 +166,7 @@ function AttributesSection({ attributes, setAttributes }) {
 // ========================
 // Variant ↔ Attribute Mapping
 // ========================
+/*
 function VariantAttributeSection({ variants, attributes, setVariants }) {
   const select = (variantIndex, attrCode, value) => {
     const next = [...variants];
@@ -200,6 +201,86 @@ function VariantAttributeSection({ variants, attributes, setVariants }) {
     )
   ]);
 }
+*/
+// Thay thể cho cái kế bên trên
+// ========================
+// Section 4: Variant ↔ Attribute Mapping (ĐÃ FIX)
+// Mỗi biến thể chỉ chọn 1 option cho mỗi attribute (radio group)
+// ========================
+function VariantAttributeSection({ variants, attributes, setVariants }) {
+  // Hàm xử lý khi chọn một giá trị cho attribute của variant
+  const select = (variantIndex, attrCode, value) => {
+    const next = [...variants];
+    next[variantIndex].attributes[attrCode] = value;
+    setVariants(next);
+  };
+
+  return h("section", { class: "card" }, [
+    h("h3", {}, "4. Gán thuộc tính cho từng biến thể"),
+
+    ...variants.map((v, vi) =>
+      h("div", { class: "variant-attr" }, [
+        h("strong", {}, v.sku || v.title || `Biến thể ${vi + 1}`),
+
+        // Lặp qua từng attribute (color, size, ...)
+        ...attributes.map((attr) =>
+          h("div", { style: "margin: 16px 0;" }, [
+            h("label", { style: "font-weight: bold; display: block; margin-bottom: 8px;" }, 
+              attr.name || attr.code || "Thuộc tính"
+            ),
+
+            // Tạo radio group cho từng giá trị của attribute
+            ...attr.values.map((val) =>
+              h("label", {
+                style: "display: inline-block; margin-right: 20px; cursor: pointer;"
+              }, [
+                h("input", {
+                  type: "radio",
+                  name: `attr-${vi}-${attr.code}`,  // group radio riêng cho từng variant + attribute
+                  value: val,
+                  checked: v.attributes[attr.code] === val,
+                  onchange: () => select(vi, attr.code, val)
+                }),
+                " " + val
+              ])
+            ),
+
+            // Nếu chưa có giá trị nào được chọn, hiển thị cảnh báo nhẹ
+            !v.attributes[attr.code] &&
+              h("small", { style: "color: #e53e3e; display: block; margin-top: 4px;" }, 
+                "Vui lòng chọn một giá trị"
+              )
+          ])
+        )
+      ])
+    ),
+
+    // Nếu chưa có variant nào thì nhắc nhở
+    variants.length === 0 &&
+      h("p", { style: "color: #666; text-align: center; margin: 20px 0;" }, 
+        "Chưa có biến thể nào. Hãy thêm biến thể ở phần trên trước."
+      )
+  ]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ========================
 // Build Payload cho RPC
