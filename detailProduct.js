@@ -1,3 +1,5 @@
+
+/*
 function ProductDetailPage({ params }) {
   const slug = params.slug;
 
@@ -105,6 +107,73 @@ function ProductDetailPage({ params }) {
     product.description && h("div", { className: "description" }, product.description)
   );
 }
+*/
+
+function ProductDetailPage({ params }) {
+  const slug = params.slug;
+
+  const [product, setProduct] = useState(null);
+  const [variants, setVariants] = useState([]);
+  const [selectedAttrs, setSelectedAttrs] = useState({});
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // useEffect load data giữ nguyên như cũ
+  // useEffect auto select variant giữ nguyên
+
+  if (loading) return h('p', { className: styles.hint }, 'Đang tải...');
+  if (error) return h('p', { style: { color: '#dc2626', fontWeight: 500 } }, error);
+  if (!product) return h('p', { className: styles.hint }, 'Sản phẩm không tồn tại');
+
+  const attributes = collectAttributes(variants);
+
+  return h('div', { className: styles.container },
+    h('h1', { className: styles.title }, product.name),
+
+    h('img', {
+      src: product.thumbnail_url || '/assets/images/placeholder-product.svg',
+      alt: product.name,
+      className: styles.productImage,
+      onError: (e) => { e.target.src = '/assets/images/placeholder-product.svg'; }
+    }),
+
+    // Attribute selectors
+    ...Object.entries(attributes).map(([code, values]) =>
+      h('div', { className: styles.attrGroup, key: code },
+        h('label', {}, code.toUpperCase()),
+        h('div', { className: styles.attrOptions },
+          ...values.map(val =>
+            h('button', {
+              key: val,
+              className: selectedAttrs[code] === val ? styles.active : '',
+              onClick: () => setSelectedAttrs(prev => ({ ...prev, [code]: val }))
+            }, val)
+          )
+        )
+      )
+    ),
+
+    // Price & Stock block
+    h('div', { className: styles.priceBlock },
+      selectedVariant
+        ? h('div', {},
+            h('div', { className: styles.price },
+              `${selectedVariant.price.toLocaleString('vi-VN')} ₫`
+            ),
+            selectedVariant.stock > 0
+              ? h('p', { className: styles.stockInfo }, `Còn ${selectedVariant.stock} cái`)
+              : h('p', { className: styles.stockOut }, 'Hết hàng')
+          )
+        : h('p', { className: styles.hint }, 'Vui lòng chọn đầy đủ thuộc tính')
+    ),
+
+    product.description && h('div', { className: styles.description }, product.description)
+  );
+}
+
+
+
 
 // groupVariants & collectAttributes giữ nguyên như bạn viết
 function groupVariants(rows = []) {
