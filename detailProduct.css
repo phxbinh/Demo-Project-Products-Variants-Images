@@ -46,6 +46,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  color: black;
+  font-weight: 700;
 }
 
 .attr-options button {
