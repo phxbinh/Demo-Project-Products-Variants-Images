@@ -1,5 +1,5 @@
 
-/*
+
 function ProductDetailPage({ params }) {
   const slug = params.slug;
 
@@ -107,8 +107,8 @@ function ProductDetailPage({ params }) {
     product.description && h("div", { className: "description" }, product.description)
   );
 }
-*/
 
+/*
 function ProductDetailPage({ params }) {
   const slug = params.slug;
 
@@ -220,7 +220,7 @@ useEffect(() => {
     product.description && h('div', { className: styles.description }, product.description)
   );
 }
-
+*/
 
 
 
