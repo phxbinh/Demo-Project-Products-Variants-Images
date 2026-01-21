@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@vercel/node": "^3.0.0",
-    "@supabase/supabase-js": "^2.33.0"
+    "@supabase/supabase-js": "^2.33.0",
+    "uuid": "^9.0.1"
   }
 }
