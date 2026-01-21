@@ -47,7 +47,11 @@ function ProductSection({ product, setProduct, images, setImages }) {
       oninput: e =>
         setProduct({
           ...product,
-          slug: e.target.value.toLowerCase().replace(/\s+/g, "-")
+          slug: e.target.value
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
         })
     }),
 
@@ -64,7 +68,9 @@ function ProductSection({ product, setProduct, images, setImages }) {
       onchange: handleProductImages
     }),
 
-    h("div", { class: "preview-grid" },
+    h(
+      "div",
+      { class: "preview-grid" },
       images
         .filter(i => i.variant_client_id === null)
         .map(img =>
@@ -147,7 +153,9 @@ function VariantsSection({ variants, setVariants, images, setImages }) {
           onchange: e => handleVariantImages(e, v.client_id)
         }),
 
-        h("div", { class: "preview-grid" },
+        h(
+          "div",
+          { class: "preview-grid" },
           images
             .filter(i => i.variant_client_id === v.client_id)
             .map(img =>
@@ -196,13 +204,17 @@ function AttributesSection({ attributes, setAttributes }) {
           }
         }),
 
-        h("button", {
-          onclick: () => {
-            const next = [...attributes];
-            next[i].values.push("");
-            setAttributes(next);
-          }
-        }, "+ value"),
+        h(
+          "button",
+          {
+            onclick: () => {
+              const next = [...attributes];
+              next[i].values.push("");
+              setAttributes(next);
+            }
+          },
+          "+ value"
+        ),
 
         ...a.values.map((v, vi) =>
           h("input", {
@@ -291,8 +303,7 @@ function buildPayload(product, variants, attributes) {
       price: v.price,
       stock: v.stock,
       is_active: v.is_active,
-      attributes: v.attributes,
-      client_id: v.client_id
+      attributes: v.attributes
     }))
   };
 }
@@ -327,21 +338,27 @@ function ProductCreatePage() {
     setLoading(true);
     try {
       const payload = buildPayload(product, variants, attributes);
+
       const { data, error } = await supabase.rpc(
-        "admin_create_product_images",
+        "admin_create_product_with_variants",
         { payload }
       );
       if (error) throw error;
 
-      const map = {};
-      data.variants.forEach(v => (map[v.client_id] = v.variant_id));
+      // map SKU → variant_id
+      const skuMap = {};
+      data.variants.forEach(v => {
+        skuMap[v.sku] = v.variant_id;
+      });
 
       const attach = {
         product_id: data.product_id,
         images: images.map(i => ({
           temp_path: i.temp_path,
           variant_id: i.variant_client_id
-            ? map[i.variant_client_id]
+            ? skuMap[
+                variants.find(v => v.client_id === i.variant_client_id)?.sku
+              ]
             : null,
           display_order: i.display_order
         }))
@@ -352,7 +369,8 @@ function ProductCreatePage() {
         body: JSON.stringify(attach),
         headers: { "Content-Type": "application/json" }
       });
-alert("Tạo sản phẩm thành công!");
+
+      alert("Tạo sản phẩm thành công!");
       navigateTo("/products");
     } catch (e) {
       alert(e.message);
@@ -367,7 +385,9 @@ alert("Tạo sản phẩm thành công!");
     h(AttributesSection, { attributes, setAttributes }),
     h(VariantAttributeSection, { variants, attributes, setVariants }),
 
-    h("button", { onclick: submit, disabled: loading },
+    h(
+      "button",
+      { onclick: submit, disabled: loading },
       loading ? "Đang lưu..." : "Tạo sản phẩm"
     )
   ]);
