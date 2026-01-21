@@ -3,6 +3,7 @@
 // Phiên bản Cách 2: Attach ảnh chạy ở Vercel API route (Edge hoặc Serverless)
 
 /*
+// Edit
 const { h } = window.App.VDOM;
 const { useState } = window.App.Hooks;
 const { navigateTo } = window.App.Router;
