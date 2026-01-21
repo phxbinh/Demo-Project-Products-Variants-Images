@@ -102,18 +102,15 @@ export default async function handler(req) {
 // Serverless / Node.js runtime (KHÔNG Edge)
 
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl) {
-  throw new Error('Missing SUPABASE_URL');
-}
-if (!supabaseServiceKey) {
-  throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY');
-}
+if (!supabaseUrl) throw new Error('Missing SUPABASE_URL');
+if (!supabaseServiceKey) throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY');
 
-// ⚠️ Dùng service role – CHỈ CHẠY Ở SERVER
+// ⚠️ SERVICE ROLE – SERVER ONLY
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(req, res) {
@@ -142,37 +139,30 @@ export default async function handler(req, res) {
         : `products/${product_id}`;
 
       const ext = temp_path.split('.').pop() || 'jpg';
-
-      // ✅ KHÔNG OVERWRITE
       const fileName = `${display_order + 1}-${crypto.randomUUID()}.${ext}`;
       const destPath = `${baseFolder}/${fileName}`;
 
-      // 1️⃣ COPY tmp → final
-      const { error: copyError } = await supabase.storage
+      // 1️⃣ MOVE tmp → final
+      const { error: moveError } = await supabase.storage
         .from(bucket)
-        .copy(temp_path, destPath);
+        .move(temp_path, destPath);
 
-      if (copyError) {
+      if (moveError) {
         results.push({
           temp_path,
-          error: `COPY_FAILED: ${copyError.message}`
+          error: `MOVE_FAILED: ${moveError.message}`
         });
         continue;
       }
 
-      // 2️⃣ LẤY PUBLIC URL
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(destPath);
-
-      // 3️⃣ INSERT DB
+      // 2️⃣ INSERT DB
       const { error: dbError } = await supabase
         .from('product_images')
         .insert({
           product_id: variant_id ? null : product_id,
           variant_id: variant_id || null,
-          image_url: destPath,
-          display_order
+          image_path: destPath,
+          display_order: display_order + 1
         });
 
       if (dbError) {
@@ -185,13 +175,9 @@ export default async function handler(req, res) {
         continue;
       }
 
-      // 4️⃣ REMOVE TMP
-      await supabase.storage.from(bucket).remove([temp_path]);
-
       results.push({
         temp_path,
         dest_path: destPath,
-        public_url: publicUrl,
         success: true
       });
     }
@@ -207,8 +193,6 @@ export default async function handler(req, res) {
     });
   }
 }
-
-
 
 
 
