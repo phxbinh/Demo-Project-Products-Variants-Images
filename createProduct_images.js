@@ -328,7 +328,7 @@ function ProductCreatePage() {
     try {
       const payload = buildPayload(product, variants, attributes);
       const { data, error } = await supabase.rpc(
-        "admin_create_product",
+        "admin_create_product_images",
         { payload }
       );
       if (error) throw error;
