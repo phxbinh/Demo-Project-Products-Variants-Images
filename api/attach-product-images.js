@@ -102,7 +102,7 @@ export default async function handler(req) {
 // Serverless / Node.js runtime (KHÔNG Edge)
 
 import { createClient } from '@supabase/supabase-js';
-import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -139,7 +139,7 @@ export default async function handler(req, res) {
         : `products/${product_id}`;
 
       const ext = temp_path.split('.').pop() || 'jpg';
-      const fileName = `${display_order + 1}-${crypto.randomUUID()}.${ext}`;
+      const fileName = `${display_order + 1}-${uuidv4()}.${ext}`;
       const destPath = `${baseFolder}/${fileName}`;
 
       // 1️⃣ MOVE tmp → final
