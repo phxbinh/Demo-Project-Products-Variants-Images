@@ -352,7 +352,7 @@ function ProductCreatePage() {
         body: JSON.stringify(attach),
         headers: { "Content-Type": "application/json" }
       });
-
+alert("Tạo sản phẩm thành công!");
       navigateTo("/products");
     } catch (e) {
       alert(e.message);
