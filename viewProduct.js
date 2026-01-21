@@ -118,7 +118,7 @@ function ProductListPage() {
     async function fetchProducts() {
       // Giả sử bạn đã tạo view public_products_view như hướng dẫn trước
       const { data, error } = await supabase
-        .from("public_products_view_images")
+        .from("public_products_view")
         .select("*")
         .order("created_at", { ascending: false });
 
