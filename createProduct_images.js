@@ -331,7 +331,7 @@ function ProductCreatePage() {
     variants.every(v =>
       attributes.every(a => v.attributes[a.code])
     );
-
+/*
   const submit = async () => {
     if (!valid) return alert("Thiếu dữ liệu");
 
@@ -378,6 +378,104 @@ function ProductCreatePage() {
       setLoading(false);
     }
   };
+*/
+const submit = async () => {
+  if (!valid) {
+    alert("Thiếu dữ liệu");
+    return;
+  }
+
+  if (loading) return;
+
+  setLoading(true);
+
+  try {
+    /* =====================
+       1. TẠO PRODUCT + VARIANTS
+    ====================== */
+    const payload = buildPayload(product, variants, attributes);
+
+    console.log("[CREATE PRODUCT] payload", payload);
+
+    const { data, error } = await supabase.rpc(
+      "admin_create_product_images",
+      { payload }
+    );
+
+    if (error) {
+      console.error("[RPC ERROR]", error);
+      throw new Error(error.message || "Tạo sản phẩm thất bại");
+    }
+
+    if (!data?.product_id) {
+      throw new Error("RPC không trả về product_id");
+    }
+
+    /* =====================
+       2. MAP client_id → variant_id
+    ====================== */
+    const variantMap = {};
+    (data.variants || []).forEach(v => {
+      if (v.client_id && v.variant_id) {
+        variantMap[v.client_id] = v.variant_id;
+      }
+    });
+
+    /* =====================
+       3. ATTACH IMAGES (NẾU CÓ)
+    ====================== */
+    let attachResult = null;
+
+    if (images.length > 0) {
+      const attachPayload = {
+        product_id: data.product_id,
+        images: images.map(i => ({
+          temp_path: i.temp_path,
+          variant_id: i.variant_client_id
+            ? variantMap[i.variant_client_id]
+            : null,
+          display_order: i.display_order
+        }))
+      };
+
+      console.log("[ATTACH IMAGES] payload", attachPayload);
+
+      const res = await fetch("/api/attach-product-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(attachPayload)
+      });
+
+      attachResult = await res.json();
+
+      if (!res.ok) {
+        console.error("[ATTACH ERROR]", attachResult);
+        throw new Error(
+          attachResult.error || "Attach ảnh thất bại"
+        );
+      }
+
+      const successCount = (attachResult.results || [])
+        .filter(r => r.success).length;
+
+      if (successCount === 0) {
+        throw new Error("Không có ảnh nào được attach thành công");
+      }
+    }
+
+    /* =====================
+       4. THÀNH CÔNG
+    ====================== */
+    alert("Tạo sản phẩm thành công");
+    navigateTo("/products");
+
+  } catch (err) {
+    console.error("[CREATE PRODUCT FAILED]", err);
+    alert(err.message || "Có lỗi xảy ra");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return h("div", {}, [
     h(ProductSection, { product, setProduct, images, setImages }),
