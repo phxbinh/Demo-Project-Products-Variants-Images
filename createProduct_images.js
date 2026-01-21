@@ -225,6 +225,146 @@ function buildPayload(product, variants, attributes) {
   };
 }
 
+
+
+
+
+
+// ========================
+// Attributes Section
+// ========================
+function AttributesSection({ attributes, setAttributes }) {
+  const addAttribute = () => {
+    setAttributes([...attributes, { code: "", name: "", values: [] }]);
+  };
+
+  const updateAttr = (i, field, value) => {
+    const next = [...attributes];
+    next[i][field] = value;
+    setAttributes(next);
+  };
+
+  const addValue = (i) => {
+    const next = [...attributes];
+    next[i].values.push("");
+    setAttributes(next);
+  };
+
+  const updateValue = (i, vi, value) => {
+    const next = [...attributes];
+    next[i].values[vi] = value;
+    setAttributes(next);
+  };
+
+  return h("section", { class: "card" }, [
+    h("h3", {}, "3. Thuộc tính (Attributes)"),
+
+    ...attributes.map((a, i) =>
+      h("div", { class: "attr" }, [
+        h("input", {
+          placeholder: "Code (ví dụ: color, size)",
+          value: a.code,
+          oninput: e => updateAttr(i, "code", e.target.value.toLowerCase())
+        }),
+        h("input", {
+          placeholder: "Tên hiển thị (Màu sắc, Kích cỡ)",
+          value: a.name,
+          oninput: e => updateAttr(i, "name", e.target.value)
+        }),
+
+        h("button", { class: "add-btn", onclick: () => addValue(i) }, "+ Thêm giá trị"),
+
+        ...a.values.map((val, vi) =>
+          h("input", {
+            placeholder: "Giá trị (Red, M, XL...)",
+            value: val,
+            oninput: e => updateValue(i, vi, e.target.value)
+          })
+        )
+      ])
+    ),
+
+    h("button", { class: "add-btn", onclick: addAttribute }, "+ Thêm thuộc tính")
+  ]);
+}
+
+// ========================
+// Variant ↔ Attribute Mapping
+// ========================
+// ========================
+// Section 4: Variant ↔ Attribute Mapping (ĐÃ FIX)
+// Mỗi biến thể chỉ chọn 1 option cho mỗi attribute (radio group)
+// ========================
+function VariantAttributeSection({ variants, attributes, setVariants }) {
+  // Hàm xử lý khi chọn một giá trị cho attribute của variant
+  const select = (variantIndex, attrCode, value) => {
+    const next = [...variants];
+    next[variantIndex].attributes[attrCode] = value;
+    setVariants(next);
+  };
+
+  return h("section", { class: "card" }, [
+    h("h3", {}, "4. Gán thuộc tính cho từng biến thể"),
+
+    ...variants.map((v, vi) =>
+      h("div", { class: "variant-attr" }, [
+        h("strong", {}, v.sku || v.title || `Biến thể ${vi + 1}`),
+
+        // Lặp qua từng attribute (color, size, ...)
+        ...attributes.map((attr) =>
+          h("div", { style: "margin: 16px 0;" }, [
+            h("label", { style: "font-weight: bold; display: block; margin-bottom: 8px;" }, 
+              attr.name || attr.code || "Thuộc tính"
+            ),
+
+            // Tạo radio group cho từng giá trị của attribute
+            ...attr.values.map((val) =>
+              h("label", {
+                style: "display: inline-block; margin-right: 20px; cursor: pointer;"
+              }, [
+                h("input", {
+                  type: "radio",
+                  name: `attr-${vi}-${attr.code}`,  // group radio riêng cho từng variant + attribute
+                  value: val,
+                  checked: v.attributes[attr.code] === val,
+                  onchange: () => select(vi, attr.code, val)
+                }),
+                " " + val
+              ])
+            ),
+
+            // Nếu chưa có giá trị nào được chọn, hiển thị cảnh báo nhẹ
+            !v.attributes[attr.code] &&
+              h("small", { style: "color: #e53e3e; display: block; margin-top: 4px;" }, 
+                "Vui lòng chọn một giá trị"
+              )
+          ])
+        )
+      ])
+    ),
+
+    // Nếu chưa có variant nào thì nhắc nhở
+    variants.length === 0 &&
+      h("p", { style: "color: #666; text-align: center; margin: 20px 0;" }, 
+        "Chưa có biến thể nào. Hãy thêm biến thể ở phần trên trước."
+      )
+  ]);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ========================
 // MAIN PAGE
 // ========================
